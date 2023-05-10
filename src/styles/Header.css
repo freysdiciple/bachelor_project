@@ -1,0 +1,22 @@
+.header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+    box-sizing: border-box;
+    
+    width: 100%;
+    box-shadow: 2px 2px 1px 1px #AAA;
+}
+
+.header-button{
+    font-size: 16px;
+    color: #425B76;
+    transition: transform 0.2s;
+}
+
+.header-button:hover{
+    cursor: pointer;
+    transform: scale(1.03);
+}

@@ -1,0 +1,24 @@
+.multi .dsl-box textarea{
+    width: 240px;
+    height: 300px;
+
+    resize: none;
+}
+
+.validate-button{
+    padding: 12px 20px;
+    background: #00BDA5;
+
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    
+    border-radius: 4px;
+    margin-top: 20px;
+
+    transition: transform 0.1s;
+}
+.validate-button:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+}
