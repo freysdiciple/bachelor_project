@@ -24,7 +24,7 @@ export default function Visualization(params){
         c2: prefDistance,
         c3: gridGap,
         c4: 0.5,
-        M: 1000,
+        M: 10000,
         r1: 0.8
     }
 
@@ -55,21 +55,34 @@ function Node(params){
 const simpleLink = (p1, p2) => {
     return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`
 }
-const arrowTransform = (p1, p2) => {
-    let t = {
+const arrowTranslate = (p1, p2) => {
+    return {
         x: (p1.x + p2.x)/2,
         y: (p1.y + p2.y)/2
     }
+}
+const arrowTransform = (p1, p2) => {
+    let t = arrowTranslate(p1, p2);
     let m = {x: p2.x - p1.x, y: p2.y - p1.y}
     let d = Math.atan2(m.y, m.x) * 180 / Math.PI;
     let r = (Math.round(d * 1000) / 1000);
     return `translate(${t.x}, ${t.y}) rotate(${r})`
 }
-function Link({source, target}){
+const defToSDA = (def) => {
+    switch(def){
+        case "R": return [5,0]
+        case "F": return [5,5]
+        case "L": return [2,2]
+    }
+} 
+function Link({identifier, def, source, target}){
+    let at = arrowTransform(source.gp.coords, target.gp.coords);
     return (
         <>
-            <path d={simpleLink(source.gp.coords, target.gp.coords)} fill="none" stroke="grey" strokeWidth={1}/>
+            <path d={simpleLink(source.gp.coords, target.gp.coords)} strokeDasharray={defToSDA(def)} fill="none" stroke="grey" strokeWidth={2}/>
             <path d={"M -5 -5 L 5 0 L -5 5"} fill="grey" transform={arrowTransform(source.gp.coords, target.gp.coords)} />
+            <text transform={at/*`translate(${at.x}, ${at.y})`*/} style={{fontSize: 10, fontWeight: "bold"}} stroke="white" fill="none">{identifier}</text>
+            <text transform={at/*`translate(${at.x}, ${at.y})`*/} style={{fontSize: 10, fontWeight: "bold"}}>{identifier}</text>
         </>
     )
 }

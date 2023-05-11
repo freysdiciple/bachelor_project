@@ -6,38 +6,34 @@ export default class Validator {
     static validateStructure(G){
 
         //Validity property 1
-        let listOfVIdentifiers = G.getVertices().map(v => v.identifier);
-        let listOfRIdentifiers = G.getFromDef("R").map(r => r.identifier);
-
-        let setFromVIdentifiers = new Set(listOfVIdentifiers);
-        let setFromRIdentifiers = new Set(listOfRIdentifiers);
-        if(listOfVIdentifiers.length > setFromVIdentifiers.size)
-            throw new Error("VP1: All entity set identifiers should be different"); 
-        if(listOfRIdentifiers.length > setFromRIdentifiers.size)
-            throw new Error("VP1: All relationship identifiers should be different"); 
+        //Change: All identifier unique
+        let listIDs = [...G.getVertices().map(v => v.identifier), ...G.getFromDef("R").map(r => r.identifier)];
+        let setIDs = new Set(listIDs);
+        if(listIDs.length > setIDs.size)
+            return "VP1: All identifiers should be unique" ; 
         
 
         //Validity property 2
         for(let m of G.getFromDef("M")) 
             if(this.Root(G, m.identifier)) 
-                throw new Error("VP2: Map vertice " + m.identifier + " shouldn't be root collections!");
+                return "VP2: Map vertice " + m.identifier + " shouldn't be root collections!";
 
         //Validity property 3
         for(let r of G.getFromDef("R"))
             if(G.M(r.source) && !G.M(r.target))
-                throw new Error("VP3: Relationship " + r.identifier + " with Map source vertice should have Map target vertice!")
+                return "VP3: Relationship " + r.identifier + " with Map source vertice should have Map target vertice!"
         
         //Validity property 4
         if(!this.isAcyclic(new Structure([...G.getVertices(), ...G.getFromDef("R")]), "R"))
-            throw new Error("VP4: Relationship subgraph must be acyclic!");
+            return "VP4: Relationship subgraph must be acyclic!";
         if(!this.isAcyclic(new Structure([...G.getVertices(), ...G.getFromDef("F")]), "F"))
-            throw new Error("VP4: Fragmentation subgraph must be acyclic!");
+            return "VP4: Fragmentation subgraph must be acyclic!";
         
         //Validity property 5
         let r = this.duplicateSourceTargetPair(G.getFromDef("R"));
         let f = this.duplicateSourceTargetPair(G.getFromDef("F"));
-        if(r) throw new Error("VP5: Multiple relationships between " + r);
-        if(f) throw new Error("VP5: Multiple fragmentations between " + f);
+        if(r) return "VP5: Multiple relationships between " + r;
+        if(f) return "VP5: Multiple fragmentations between " + f;
 
         //Validity property 6 and 7 only applicable for restructuring
 
@@ -45,13 +41,13 @@ export default class Validator {
         let links = G.getFromDef("L");
         for(let link of links) 
             if(!link.validate(G)) 
-                throw new Error("VP8: Link " + link.toString() + " not valid!")
+                return "VP8: Link " + link.toString() + " not valid!"
         
         //Validity property 9
         let nodes = G.getFromDef("R").map(r => new V(r.identifier));
         let edges = links.reduce((acc, link) => [...acc, ...link.toEdges()], []);
         if(!this.isAcyclic(new Structure([...nodes, ...edges]), "R"))
-            throw new Error("VP9: Link subgraph must be acyclic!");
+            return "VP9: Link subgraph must be acyclic!"
         
         //Validity property 10
         let last = edges.map(e => ({
@@ -60,7 +56,9 @@ export default class Validator {
         }))
         for(let l of last)
             if(l.source.target === l.target.target)
-                throw new Error("VP10: Linked relationships with same target!");
+                return "VP10: Linked relationships with same target!"
+            
+        return false;
     }
 
     static duplicateSourceTargetPair(edges){
@@ -132,5 +130,25 @@ export default class Validator {
 
         if(G.getFromDef(edgeDef).length === 0) return true;
         else return false;
+    }
+
+    static compareInternalStructure(A, B, G){
+        let status = true;
+        for(let field of A)
+            if(!B.find(b => b.identifier === field.identifier))
+                status = false;
+        return status;
+    }
+
+    static Equal(A, B, G){
+        return ((G.V(A) && G.V(B)) || (G.M(A) && G.M(B))) &&
+            G.F(A, B) &&
+            this.compareInternalStructure(G.get(A).internal_structure.value, G.get(B).internal_structure.value, G);
+    }
+
+    static Dir(R1, R2, G){
+        let links = G.getFromDef("L").filter(l => l.target === R2);
+        for(let link of links) if(link.relation.subject === R1) return link;
+        return false;
     }
 }

@@ -1,0 +1,36 @@
+.element-display{
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.triple-column{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: auto auto;
+    grid-auto-flow: column;
+}
+
+.column-title{
+    padding: 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-bottom: 1px solid grey;
+    border-left: 1px solid grey;
+}
+.column-title:first-child{
+    border-left: none;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+}
+
+.element-list{
+    margin-top: 10px
+}

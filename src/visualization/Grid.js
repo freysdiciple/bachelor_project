@@ -37,9 +37,9 @@ class GridModel {
         
         for(let node of nodes.sort((a,b) => (b.in.length + b.out.length) - (a.in.length + a.out.length))){
             let closestPoint = GridHelper.findClosestAvailablePoint(this.grid, node.coords);
-            if(!closestPoint) return alert("Grid not big enough");
-            closestPoint.taken = true;
-            node.gp = closestPoint;
+            //if(!closestPoint) return alert("Grid not big enough");
+            //closestPoint.taken = true;
+            node.gp = {coords: node.coords}//closestPoint;
         }
     }
 }

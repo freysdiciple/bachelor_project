@@ -18,7 +18,7 @@ class Structure {
     }
 
     R(s, r, c, t){
-        let relationships = this.elements.filter(e => e.def === "R");
+        let relationships = this.getFromDef("R");
         
         for(let relationship of relationships) {
             let res = 0;
@@ -76,7 +76,13 @@ class Structure {
     }
 
     removeElement(element){
-        this.elements.splice(this.elements.indexOf(element), 1);
+        let index = this.elements.indexOf(element);
+        if(index > -1) this.elements.splice(index, 1);
+        else console.log("Couldn't find element ", element);
+    }
+    
+    get(id){
+        return this.elements.find(e => e.identifier === id);
     }
 
     commit(){
@@ -85,17 +91,17 @@ class Structure {
         //Check that all relationships have existing source and target entity sets
         for(let relationship of this.getFromDef("R")){
             if(!vertices.find(v => v.identifier === relationship.source))
-                throw new Error("Couldn't find source " + relationship.source + " of relationship");
+                return "Couldn't find source " + relationship.source + " of relationship";
             if(!vertices.find(v => v.identifier === relationship.target))
-                throw new Error("Couldn't find target " + relationship.target + " of relationship");
+                return "Couldn't find target " + relationship.target + " of relationship";
         }
 
         //Check that all fragmentations have existing source and target entity sets
         for(let fragmentation of this.getFromDef("F")){
             if(!vertices.find(v => v.identifier === fragmentation.source))
-                throw new Error("Couldn't find source " + fragmentation.source + " of fragmentation");
+                return "Couldn't find source " + fragmentation.source + " of fragmentation";
             if(!vertices.find(v => v.identifier === fragmentation.target))
-                throw new Error("Couldn't find target " + fragmentation.target + " of fragmentation");
+                return "Couldn't find target " + fragmentation.target + " of fragmentation";
         }
 
         return this;
@@ -105,12 +111,16 @@ class Structure {
         let fragmentations = this.getFromDef("F");
         let links = this.getFromDef("L");
 
+        for(let element of this.elements) 
+            if(element.def !== "F" && element.def !== "L")
+                return "Only Links and Fragmentations in restructuring file!"
+
         //Check that all fragmentations have existing source and target entity sets
         for(let fragmentation of fragmentations) {
             if(!OG.getVertices().find(v => v.identifier === fragmentation.source))
-                throw new Error("Couldn't find vertice " + fragmentation.source + " in the old structure");
+                return "Couldn't find vertice " + fragmentation.source + " in the old structure";
             if(!NG.getVertices().find(v => v.identifier === fragmentation.target))
-                throw new Error("Couldn't find vertice " + fragmentation.target + " in the new structure");
+                return "Couldn't find vertice " + fragmentation.target + " in the new structure";
         }
 
         //Check that all links have existing endpoints
@@ -119,9 +129,9 @@ class Structure {
             let target = link.target;
             for(let source of sources)
                 if(!OG.getFromDef("R").find(r => r.identifier === source))
-                    throw new Error("Couldn't find relationship " + source + " in old structure");
+                    return "Couldn't find relationship " + source + " in old structure";
             if(!NG.getFromDef("R").find(r => r.identifier === target))
-                throw new Error("Couldn't find relationship " + target + " in new structure");
+                return "Couldn't find relationship " + target + " in new structure";
         }
 
         return this;

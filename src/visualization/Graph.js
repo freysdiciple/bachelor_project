@@ -3,6 +3,7 @@ import { Vector } from "./General"
 class NodeModel {
     constructor(n){
         this.identifier = n.identifier;
+        this.def = n.def;
         this.in = [];
         this.out = [];
 
@@ -11,10 +12,12 @@ class NodeModel {
 }
 
 class LinkModel {
-    constructor(source, target){
+    constructor(r){
         this.id = Math.random() * 10000;
-        this.source = source;
-        this.target = target;
+        this.identifier = r.identifier;
+        this.def = r.def;
+        this.source = r.source;
+        this.target = r.target;
     }
 }
 
@@ -44,7 +47,11 @@ class GraphHelper {
     
             if(!source || !target) return null; //Return null, to mark link for deletion
     
-            return new LinkModel(source, target);
+            return new LinkModel({
+                identifier: l.identifier, 
+                def: l.def, 
+                source, target
+            });
         }).filter(c => c); //Filter to weed out incomplete links
     
         //Generate references from nodes to their links
