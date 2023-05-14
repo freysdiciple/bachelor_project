@@ -10,10 +10,9 @@ const App = () => {
   return (<div className="page">
     <Header handler={(i) => setPage(i)} page={page}/>
     <div className="body" >
-      <div className="slider" style={{transform: `translateX(-${50*page}%)`}}>
-        <Single />
-        <Multi />
-      </div>
+      {
+        page === 0 ? <Single /> : <Multi />
+      }
     </div>
   </div>)
 }

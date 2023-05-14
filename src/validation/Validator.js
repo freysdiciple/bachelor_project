@@ -88,15 +88,15 @@ export default class Validator {
         let newTargetSet = new Set(newTargetList);
 
         if(oldTargetSet.size < oldTargetList.length)
-            throw new Error("A source entity set has multiple target entity sets for the restructuring");
+            return "A source entity set has multiple target entity sets for the restructuring";
         if(newTargetSet.size < newTargetList.length)
-            throw new Error("A target entity set has multiple source entity sets for the restructuring");
+            return "A target entity set has multiple source entity sets for the restructuring";
 
         //Validity Property 8
         let links = G.getFromDef("L");
         for(let link of links) 
             if(!link.validateForRestructuring(G, OG, NG))
-                throw new Error("VP8: Link " + link.toString() + " not valid!");
+                return "VP8: Link " + link.toString() + " not valid!";
         
         //Validity property 9
         //If both structure are valid, then this property will also be valid,

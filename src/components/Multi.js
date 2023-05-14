@@ -13,26 +13,42 @@ const Multi = (params) => {
     const [show, setShow] = useState(false);
 
     const validate = () => {
-        let preStructure = Parser.parseStructure(preString).commit();
-        let failMessage = Validator.validateStructure(preStructure);
-        if(failMessage) return alert(failMessage);
-        else if(typeof preStructure === "string") return alert(preStructure);
 
-        let postStructure = Parser.parseStructure(postString).commit();
-        let failMessage2 = Validator.validateStructure(postStructure);
-        if(failMessage2) return alert(failMessage2);
-        else if(typeof postStructure === "string") return alert(preStructure);
+        //Get Old Structure
+        let preParsed = Parser.parseStructure(preString);
+        if(typeof preParsed === "string") return alert(preParsed);
 
-        let restStructure = Parser.parseStructure(restString, true)
-            .commitRestructuring(preStructure, postStructure);
+        let preStructure = preParsed.commit();
+        if(typeof preStructure === "string") return alert(preStructure);
+
+        let preFailMessage = Validator.validateStructure(preStructure);
+        if(preFailMessage) return alert(preFailMessage);
+
+        //Get Old StructurepostStructure
+        let postParsed = Parser.parseStructure(postString);
+        if(typeof postParsed === "string") return alert(postParsed);
+
+        let postStructure = postParsed.commit();
+        if(typeof postStructure === "string") return alert(postStructure);
+
+        let postFailMessage = Validator.validateStructure(postStructure);
+        if(postFailMessage) return alert(postFailMessage);
+
+        //Get Restructuring
+        let restParsed = Parser.parseStructure(restString, true);
+        if(typeof restParsed === "string") return alert(restParsed)
+
+        let restStructure = restParsed.commitRestructuring(preStructure, postStructure);
+        if(typeof restStructure === "string") return alert(restStructure);
+
         let failMessage3 = Validator.validateRestructure(restStructure, preStructure, postStructure);
         if(failMessage3) return alert(failMessage3);
-        else if(typeof restStructure === "string") return alert(restStructure);
 
+        //Merge structures
         let merged = Merger.mergeStructures(restStructure, preStructure, postStructure);
         setProduct(merged);
         setShow(true);
-        console.log(merged)
+        console.log(merged.toString());
     }
 
     const hide = () => setShow(false);

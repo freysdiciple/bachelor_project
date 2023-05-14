@@ -27,7 +27,12 @@ export default class Parser {
 
         const tree = parser.struct();
         const visitor = new StructureVisitor();
-        return visitor.visitStruct(tree);
-
+        try{
+            let structure = visitor.visitStruct(tree);
+            return structure;
+        }
+        catch(e){
+            return "Syntax error in DSL file";
+        }
     }
 }

@@ -45,7 +45,6 @@ export default class Merger {
         
         //Merge rest
         let roots = structure.getVertices().filter(v => Validator.Root(structure, v.identifier));
-        console.log(roots)
         for(let root of roots) structure = this.recursiveMerge(root.identifier, structure);
 
         return structure;
@@ -93,7 +92,45 @@ export default class Merger {
                 source.mark = this.markMix(source.mark, target.mark);
                 pair.r1.mark = this.markMix(pair.r1.mark, pair.r2.mark);
                 let flow = G.getFromDef("F").find(f => f.source === pair.r1.target && f.target === pair.r2.target);
-                 
+
+                //Any duplicate fragmentations and links that occur from the merging
+                //should be removed
+                for(let vertex of G.getVertices()){
+                    if(G.F(vertex.identifier, source.identifier) &&
+                        G.F(vertex.identifier, target.identifier))
+                        G.removeElement(
+                            G.getFromDef("F").find(f => 
+                                f.source === vertex.identifier &&
+                                f.target === target.identifier)
+                        )
+                    else if(G.F(source.identifier, vertex.identifier) &&
+                        G.F(target.identifier, vertex.identifier))
+                        G.removeElement(
+                            G.getFromDef("F").find(f =>
+                                f.source === target.identifier &&
+                                f.target === vertex.identifier)
+                        )
+                }
+                let links = G.getFromDef("L")
+                for(let i=0; i<links.length; i++){
+                    let link1 = links[i];
+                    //If link points to source relationship
+                    if(link1.target === pair.r1.identifier){
+                        for(let j=0; j<links.length; j++){
+                            if(i === j) continue;
+                            let link2 = links[j];
+                            //Find another link that points to target relationship
+                            if(link2.target === pair.r2.identifier){
+                                //If both are linked in the same way
+                                if(link1.relation.toString() === link2.relation.toString()){
+                                    G.removeElement(link2);
+                                    links = G.getFromDef("L");
+                                }
+                            }
+                        }
+                    }
+                }
+
                 //Redirect all edges coming in and out of old vertice
                 for(let edge of [
                     ...G.getOutgoing(pair.r2.target, "R"), 
@@ -105,7 +142,6 @@ export default class Merger {
                 ]) edge.target = pair.r1.target;
 
                 //Redirect all links coming in and out of old relationship
-                let links = G.getFromDef("L");
                 for(let l of links){
                     if(l.target === pair.r2.identifier) l.target = pair.r1.identifier;
                     else {
@@ -142,7 +178,7 @@ export default class Merger {
             //    source.subject = rename(source.subject);
     }
 
-    static renameStructure(G, rename){
+    static renameStructure(G, rename, counter){
         for(let vertice of G.getVertices())
             vertice.identifier = rename(vertice.identifier);
         

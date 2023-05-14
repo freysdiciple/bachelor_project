@@ -11,6 +11,13 @@ class L extends Definition {
         this.target = target;
     }
 
+    toShowcase(i){
+        return <div key={i} className="element-display">
+            <b>Link (from {this.mark})</b>
+            <div>{this.relation.toString()} = {this.target}</div>
+        </div>
+    }
+
     toEdges(){
         let sources = this.relation.getSubjects().map(s => s.subject);
         let target = this.target;

@@ -22,9 +22,9 @@ export default function Visualization(params){
     const constants = {
         c1: 2,
         c2: prefDistance,
-        c3: gridGap,
-        c4: 0.5,
-        M: 10000,
+        c3: prefDistance,
+        c4: 0.8,
+        M: 1000,
         r1: 0.8
     }
 

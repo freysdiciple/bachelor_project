@@ -136,6 +136,10 @@ class Structure {
 
         return this;
     }
+
+    toString(){
+        return this.elements.map(e => e.toString()).join("\n\n")
+    }
 }
 
 export default Structure;
