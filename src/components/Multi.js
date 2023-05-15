@@ -6,9 +6,9 @@ import Merger from "../validation/Merging";
 import RestructureShowcase from "./RestructureShowcase";
 
 const Multi = (params) => {
-    const [preString, setPreString] = useState(preData3)
-    const [postString, setPostString] = useState(postData3);
-    const [restString, setRestString] = useState(restData3);
+    const [preString, setPreString] = useState("")
+    const [postString, setPostString] = useState("");
+    const [restString, setRestString] = useState("");
     const [product, setProduct] = useState(null);
     const [show, setShow] = useState(false);
 
@@ -77,75 +77,3 @@ const Multi = (params) => {
 }
 
 export default Multi;
-const preData = `
-    V(Parent,{})
-    V(Child,{})
-    R(Parent, has, many, Child)
-`
-const preData2 = `
-    V(Patient, {}) 
-    V(Device, {}) 
-    V(Datapoint, {}) 
-    R(Patient, wears, many, Device) 
-    R(Device, captures, many, Datapoint)
-`
-const preData3 = `
-    V(User, {})
-    V(Recipe, {})
-    V(ShoppingList, {})
-    V(Item, {})
-
-    R(User, writes, many, ShoppingList)
-    R(User, plans, many, Recipe)
-    R(ShoppingList, has, many, Item)
-    R(Recipe, requires, many, Item)
-`
-
-const postData = `
-    V(Parent, {})
-    V(Child, {})
-    R(Parent, has, many, Child)
-`
-const postData2 = `
-    V(Patient, {})
-    V(Device, {})
-    V(Datapoint, {})
-    M(DeviceFragment, {})
-    R(Patient, wears, many, Device)
-    R(Patient, captures, many, Datapoint)
-    R(Datapoint, captured_by, one, DeviceFragment)
-    F(Device, DeviceFragment, {})
-`
-const postData3 = `
-    V(User, {})
-    V(ShoppingList, {})
-    V(Item, {})
-    V(Recipe, {})
-
-    R(User, writes, many, ShoppingList)
-    R(ShoppingList, has, many, Item)
-    R(Recipe, requires, many, Item)
-`
-
-const restData = `
-    F(Parent, Parent, {})
-    F(Child, Child, {})
-    has = has
-`
-const restData2 = `
-    F(Patient, Patient, {})
-    F(Device, Device, {})
-    F(Datapoint, Datapoint, {})
-    wears = wears
-    funnel(wears, captures) = captures
-    invert(captures) = captured_by
-`
-const restData3 = `
-    F(User, User, {})
-    F(ShoppingList, ShoppingList, {})
-    F(Recipe, Recipe, {})
-    F(Item, Item, {})
-    writes = writes
-    has = has
-    requires = requires
-`

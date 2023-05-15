@@ -16,6 +16,10 @@
     transform: translate(-50%, 0);
     z-index: 20;
 
+    max-height: calc(100vh - 60px);
+    box-sizing: border-box;
+    overflow-y: auto;
+
     background: white;
     border: 2px solid #888;
     border-radius: 4px;

@@ -8,26 +8,41 @@ const TopologicalDisplay = (params) => {
         <div className="modal-content top">
             <div className="modal-title">Topological Sortings of Subgraphs</div>
             <div className="topo-section">
-                <div className="topo-section-title">Relationship subgraphs</div>
+                <div className="topo-section-title">Relationship subgraph <br /><div className="topo-section-subtitle">({subgraphs.rTopologicals.length} unconnected groups)</div></div>
                 <div className="topo-section-list">
                     {
-                        subgraphs.rTopologicals.map((g,i) => <TopologicalGraph key={i} nodes={g.nodes} edges={g.edges} def={g.def}/>)
+                        subgraphs.rTopologicals.map((g,i) => 
+                            <TopologicalGraph 
+                                key={i} 
+                                nodes={g.nodes.map(n => ({id: n, def: (params.structure.V(n) ? "V" : "M")}))} 
+                                edges={g.edges} 
+                                def={g.def}/>)
                     }
                 </div>
             </div>
             <div className="topo-section">
-                <div className="topo-section-title">Fragmentation subgraphs</div>
+                <div className="topo-section-title">Fragmentation subgraphs <br /><div className="topo-section-subtitle">({subgraphs.fTopologicals.length} unconnected groups)</div></div>
                 <div className="topo-section-list">
                     {
-                        subgraphs.fTopologicals.map((g,i) => <TopologicalGraph key={i} nodes={g.nodes} edges={g.edges} def={g.def}/>)
+                        subgraphs.fTopologicals.map((g,i) => 
+                            <TopologicalGraph 
+                                key={i} 
+                                nodes={g.nodes.map(n => ({id: n, def: (params.structure.V(n) ? "V" : "M")}))} 
+                                edges={g.edges} 
+                                def={g.def}/>)
                     }
                 </div>
             </div>
             <div className="topo-section">
-                <div className="topo-section-title">Link subgraphs</div>
+                <div className="topo-section-title">Link subgraphs <br /><div className="topo-section-subtitle">({subgraphs.lTopologicals.length} unconnected groups)</div></div>
                 <div className="topo-section-list">
                     {
-                        subgraphs.lTopologicals.map((g,i) => <TopologicalGraph key={i} nodes={g.nodes} edges={g.edges} def={g.def}/>)
+                        subgraphs.lTopologicals.map((g,i) => 
+                            <TopologicalGraph 
+                                key={i} 
+                                nodes={g.nodes.map(n => ({id: n, def: (params.structure.V(n) ? "V" : "M")}))} 
+                                edges={g.edges} 
+                                def={g.def}/>)
                     }
                 </div>
             </div>
@@ -38,8 +53,11 @@ const TopologicalDisplay = (params) => {
 export default TopologicalDisplay;
 const getDashArray = (def) => {
     switch(def){
+        case "V": return "5 0";
+        case "M": return "5 5";
+        case "R": return "5 0";
         case "F": return "5 5";
-        case "L": return "2 2";
+        case "L": return "1 1";
         default: return "5 0";
     }
 }
@@ -95,7 +113,7 @@ const TopologicalGraph = ({nodes, edges, def}) => {
             
             //Fix path
             let path = edge.firstChild;
-            path.setAttribute("d", `M 0 ${edgeBox.height} C 0 0, ${edgeBox.width} 0, ${edgeBox.width} ${edgeBox.height - 8}`)
+            path.setAttribute("d", `M 0 ${edgeBox.height} C 0 0, ${edgeBox.width} 0, ${edgeBox.width} ${edgeBox.height - 6}`)
         
             //Fix text
             let text = edge.lastChild;
@@ -117,7 +135,7 @@ const TopologicalGraph = ({nodes, edges, def}) => {
 
             //Fix path
             let path = edge.firstChild;
-            path.setAttribute("d", `M 0 0 C 0 ${edgeBox.height}, ${edgeBox.width} ${edgeBox.height}, ${edgeBox.width} 8`)
+            path.setAttribute("d", `M 0 0 C 0 ${edgeBox.height}, ${edgeBox.width} ${edgeBox.height}, ${edgeBox.width} 6`)
             
             //Fix text
             let text = edge.lastChild;
@@ -134,25 +152,25 @@ const TopologicalGraph = ({nodes, edges, def}) => {
         <defs>
             <marker
             id="triangle"
-            viewBox="0 0 4 4"
-            refY="2"
+            viewBox="0 0 6 6"
+            refY="3"
             markerUnits="strokeWidth"
-            markerWidth="4"
-            markerHeight="4"
+            markerWidth="6"
+            markerHeight="6"
             orient="auto">
-                <path d="M 0 0 L 4 2 L 0 4 z" />
+                <path d="M 0 0 L 6 3 L 0 6 z" />
             </marker>
         </defs>
         {
             nodes.map((n,i) => 
-                <g key={i} className="topo-node" id={n}>
-                    <rect />
+                <g key={i} className="topo-node" id={n.id}>
+                    <rect strokeDasharray={getDashArray(n.def)}/>
                     <g style={{textAnchor: "middle", dominantBaseline: "middle"}}>
                         <text fill="white" stroke="white">
-                            {n}
+                            {n.id}
                         </text>
                         <text fill="black" stroke="none">
-                            {n}
+                            {n.id}
                         </text>
                     </g>
                 </g>
